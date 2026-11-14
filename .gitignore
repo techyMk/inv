@@ -1,0 +1,10 @@
+# Source / local-only files (not part of the deployed site)
+Prakash Vaishu.pdf
+image.png
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.vercel
