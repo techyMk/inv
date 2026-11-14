@@ -335,8 +335,27 @@ body.bar-on #main{padding-bottom:84px}
   opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;max-width:88vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── accents (no perpetual motion) ───────────────── */
+/* ── accents ─────────────────────────────────────── */
 .band>.wrap,.band>.scroll-cue{position:relative;z-index:1}
+/* falling petals — pure CSS transforms, confined to the hero, paused off-screen.
+   (No canvas: nothing repaints under the fixed action bar, so it never jitters.) */
+.hero-band{overflow:hidden}
+.petals{position:absolute;inset:0;z-index:0;pointer-events:none}
+.petals.paused .petal{animation-play-state:paused}
+.petal{position:absolute;top:0;display:block;
+  background:linear-gradient(135deg,#f1bcc8,#d87890);
+  border-radius:70% 8% 70% 8%;
+  box-shadow:0 1px 2px rgba(132,28,53,.08);
+  opacity:0;transform:translate3d(0,-28px,0) rotate(0deg);
+  will-change:transform,opacity;
+  animation-name:petalfall;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes petalfall{
+  0%{opacity:0;transform:translate3d(0,-28px,0) rotate(0deg)}
+  10%{opacity:.6}
+  85%{opacity:.5}
+  100%{opacity:0;transform:translate3d(var(--dx,20px),900px,0) rotate(520deg)}
+}
+@media(prefers-reduced-motion:reduce){.petal{display:none}}
 /* soft shimmer sweep across the couple's names */
 .shimmer{background:linear-gradient(100deg,var(--burgundy) 43%,var(--gold-soft) 50%,var(--burgundy) 57%);
   background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
@@ -428,7 +447,19 @@ body.bar-on #main{padding-bottom:84px}
 <main id="main">
 
   <!-- A. Couple reveal -->
-  <section class="band ivory" aria-labelledby="couple-h">
+  <section class="band ivory hero-band" aria-labelledby="couple-h">
+    <div class="petals" id="petals" aria-hidden="true">
+      <span class="petal" style="left:5%;--dx:34px;width:13px;height:13px;animation-duration:12s;animation-delay:-1s"></span>
+      <span class="petal" style="left:14%;--dx:-22px;width:9px;height:9px;animation-duration:9.5s;animation-delay:-5s"></span>
+      <span class="petal" style="left:24%;--dx:26px;width:11px;height:11px;animation-duration:11s;animation-delay:-8s"></span>
+      <span class="petal" style="left:34%;--dx:-30px;width:8px;height:8px;animation-duration:8.5s;animation-delay:-3s"></span>
+      <span class="petal" style="left:45%;--dx:20px;width:12px;height:12px;animation-duration:13s;animation-delay:-6s"></span>
+      <span class="petal" style="left:56%;--dx:-26px;width:10px;height:10px;animation-duration:10s;animation-delay:-2s"></span>
+      <span class="petal" style="left:66%;--dx:30px;width:9px;height:9px;animation-duration:11.5s;animation-delay:-9s"></span>
+      <span class="petal" style="left:76%;--dx:-18px;width:13px;height:13px;animation-duration:9s;animation-delay:-4s"></span>
+      <span class="petal" style="left:85%;--dx:24px;width:8px;height:8px;animation-duration:12.5s;animation-delay:-7s"></span>
+      <span class="petal" style="left:93%;--dx:-28px;width:11px;height:11px;animation-duration:10.5s;animation-delay:-2.5s"></span>
+    </div>
     <div class="wrap band-pad hero">
       <div class="hero-grid">
         <div class="hero-copy">
@@ -787,6 +818,11 @@ initCountdown();
 initDirections();
 initScrollCue();
 initShare();
+// Pause the petals whenever the hero is off-screen: no motion near the action bar.
+(function(){
+  const petals=document.getElementById('petals'); if(!petals||prefersReduced) return;
+  new IntersectionObserver(es=>es.forEach(e=>petals.classList.toggle('paused',!e.isIntersecting)),{threshold:0}).observe(petals);
+})();
 $('#barEvents').addEventListener('click',()=>{
   document.querySelector('#cel-h').scrollIntoView({behavior:prefersReduced?'auto':'smooth',block:'start'});
 });
