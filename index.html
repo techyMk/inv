@@ -493,19 +493,8 @@ body.bar-on #main{padding-bottom:84px}
     </div>
   </section>
 
-  <!-- E. Venues -->
-  <section class="band ivory" aria-labelledby="ven-h">
-    <div class="wrap band-pad">
-      <div class="center">
-        <p class="eyebrow reveal">Where we gather</p>
-        <h2 class="reveal d1" id="ven-h">The Venues</h2>
-      </div>
-      <div class="venues" id="venues"><!-- built by JS --></div>
-    </div>
-  </section>
-
   <!-- F. Closing -->
-  <section class="band warm closing" aria-labelledby="close-h">
+  <section class="band ivory closing" aria-labelledby="close-h">
     <div class="wrap band-pad">
       <img class="rings reveal" src="rings.png" alt="Interlocked wedding rings motif" width="310" height="176">
       <h2 class="reveal d1" id="close-h">Your presence &amp; blessings<br>will make our celebration complete</h2>
@@ -517,8 +506,6 @@ body.bar-on #main{padding-bottom:84px}
           Share Invitation
         </button>
       </div>
-      <div class="monogram reveal d2" aria-hidden="true">P&nbsp;V</div>
-      <p class="foot reveal d2">All times in Indian Standard Time (IST)</p>
     </div>
   </section>
 </main>
@@ -658,99 +645,11 @@ function buildEvents(){
         <div class="row">${I.pin}<span><span class="venue-name">${esc(ev.venueName)}</span><br>${esc(ev.venueAddress)}</span></div>
         <div class="actions">
           <a class="btn gold" href="${ev.mapsUrl}" target="_blank" rel="noopener">${I.pin} Get Directions</a>
-          ${SANDBOXED
-            ? `<a class="btn ghost gold" href="${gcalUrl(ev)}" target="_blank" rel="noopener">${I.cal} Add to Calendar</a>`
-            : `<div class="cal-wrap">
-                 <button class="btn ghost gold cal-btn" type="button" aria-expanded="false">${I.cal} Add to Calendar</button>
-                 <div class="cal-menu" hidden>
-                   <a href="${gcalUrl(ev)}" target="_blank" rel="noopener">${I.g} Google Calendar</a>
-                   <a href="#" class="ics-link" data-key="${ev.key}">${I.down} Apple / Outlook (.ics)</a>
-                   <p class="hint">Downloads a calendar entry with the venue &amp; time.</p>
-                 </div>
-               </div>`}
         </div>
       </div>`;
     host.appendChild(card);
   });
 
-  // calendar popover toggles
-  host.querySelectorAll('.cal-btn').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.stopPropagation();
-      const menu = btn.nextElementSibling;
-      const open = !menu.hidden;
-      closeAllCal();
-      if(open) return;
-      menu.hidden = false; btn.setAttribute('aria-expanded','true');
-    });
-  });
-  host.querySelectorAll('.ics-link').forEach(a=>{
-    a.addEventListener('click',e=>{ e.preventDefault(); downloadICS(a.dataset.key); });
-  });
-  document.addEventListener('click',closeAllCal);
-}
-function closeAllCal(){
-  document.querySelectorAll('.cal-menu').forEach(m=>m.hidden=true);
-  document.querySelectorAll('.cal-btn').forEach(b=>b.setAttribute('aria-expanded','false'));
-}
-
-/* ── Google Calendar link ── */
-function gcalUrl(ev){
-  const start = toUTCStamp(ev.startISO);
-  const end = toUTCStamp(ev.endISO || ev.startISO); // reception: no end → zero-duration marker
-  const details = `${CONFIG.couple.names} — ${ev.title}. We can't wait to celebrate with you!`;
-  const loc = `${ev.venueName}, ${ev.venueAddress}`;
-  const p = new URLSearchParams({
-    action:'TEMPLATE',
-    text:`${CONFIG.couple.names} — ${ev.title}`,
-    dates:`${start}/${end}`,
-    details, location:loc, ctz:'Asia/Kolkata'
-  });
-  return 'https://calendar.google.com/calendar/render?'+p.toString();
-}
-
-/* ── .ics download (works when the page is hosted/opened as a file) ── */
-function downloadICS(key){
-  const ev = CONFIG.events.find(e=>e.key===key); if(!ev) return;
-  const dtstamp = toUTCStamp(new Date().toISOString());
-  const lines = [
-    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Prakash & Vaishnavi//Wedding//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH',
-    'BEGIN:VEVENT',
-    `UID:${ev.key}-pv-2026@prakash-vaishnavi`,
-    `DTSTAMP:${dtstamp}`,
-    `DTSTART:${toUTCStamp(ev.startISO)}`,
-  ];
-  if(ev.endISO) lines.push(`DTEND:${toUTCStamp(ev.endISO)}`);
-  lines.push(
-    `SUMMARY:${CONFIG.couple.names} — ${ev.title}`,
-    `LOCATION:${(ev.venueName+', '+ev.venueAddress).replace(/,/g,'\\,')}`,
-    `DESCRIPTION:${CONFIG.couple.names} — ${ev.title}. We can't wait to celebrate with you!`,
-    'END:VEVENT','END:VCALENDAR'
-  );
-  const blob = new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url; a.download=`${ev.key}-prakash-vaishnavi.ics`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1500);
-  closeAllCal();
-  showToast('Calendar file ready');
-}
-
-/* ── Build venues ── */
-function buildVenues(){
-  const host = $('#venues');
-  const labels = {reception:'Reception & Celebrations', wedding:'Wedding · Muhurtham'};
-  CONFIG.events.forEach(ev=>{
-    const el = document.createElement('article');
-    el.className='venue reveal';
-    el.innerHTML = `
-      <span class="tag">${esc(labels[ev.key]||ev.title)}</span>
-      <h3>${esc(ev.venueName)}</h3>
-      <address>${esc(ev.venueAddress)}</address>
-      <a class="btn gold" href="${ev.mapsUrl}" target="_blank" rel="noopener">${I.pin} Get Directions</a>`;
-    host.appendChild(el);
-  });
 }
 
 /* ── Countdown ── */
@@ -972,7 +871,6 @@ function initScrollCue(){
 
 /* ── wire up ── */
 buildEvents();
-buildVenues();
 initCountdown();
 initDirections();
 initScrollCue();
