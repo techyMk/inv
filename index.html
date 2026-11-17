@@ -201,14 +201,14 @@ p{margin:0}
 
 /* A. Couple reveal */
 .hero{min-height:min(760px,92svh);display:flex;align-items:center}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center;width:100%}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:clamp(28px,5vw,64px);align-items:center;justify-items:center;width:100%}
 .hero-grid>*{min-width:0}
-.hero-copy{text-align:left}
-.ganesha{height:clamp(64px,9vw,92px);width:auto;margin-bottom:18px;opacity:.95}
+.hero-copy{text-align:center;max-width:46rem}
+.ganesha{height:clamp(64px,9vw,92px);width:auto;margin:0 auto 18px;opacity:.95}
 .hero .invited{margin:6px 0 2px;letter-spacing:.3em;text-transform:uppercase;font-family:var(--serif);color:var(--ink-soft);font-size:clamp(.74rem,.7rem + .3vw,.9rem)}
 .hero-names{font-size:clamp(2.7rem,1.7rem + 6.2vw,6.4rem);margin:.04em 0 .14em}
-.hero .quote{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:clamp(1.12rem,1rem + .7vw,1.42rem);line-height:1.5;max-width:30ch}
-.hero .when{display:flex;align-items:center;gap:14px;margin-top:22px;font-family:var(--serif);color:var(--burgundy);
+.hero .quote{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:clamp(1.12rem,1rem + .7vw,1.42rem);line-height:1.5;max-width:30ch;margin-inline:auto}
+.hero .when{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px;font-family:var(--serif);color:var(--burgundy);
   font-size:clamp(1.05rem,.95rem + .5vw,1.3rem);letter-spacing:.04em}
 .hero .when::before{content:"";width:34px;height:1px;background:var(--gold)}
 .photo-frame{position:relative;padding:12px;background:linear-gradient(160deg,#fff9ee,#f6e8cf);
@@ -469,9 +469,6 @@ body.bar-on #main{padding-bottom:84px}
           <p class="quote reveal d2">“Somewhere between a wish and a dream, two souls found a love beyond what it seemed.”</p>
           <p class="when reveal d2">29 November 2026 · Salem</p>
         </div>
-        <figure class="photo-frame reveal d1" aria-label="Prakash and Vaishnavi">
-          <img src="couple.jpg" alt="Prakash and Vaishnavi together" width="1000" height="1500" fetchpriority="high">
-        </figure>
       </div>
     </div>
     <div class="wrap" style="text-align:center">
